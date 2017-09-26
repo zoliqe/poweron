@@ -1,2 +1,3 @@
 # poweron
-Simple HTTP based PowerOn switch for remote gear power switching
+
+A web server built using [Shelf](https://pub.dartlang.org/packages/shelf).
