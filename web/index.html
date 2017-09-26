@@ -67,6 +67,7 @@
       console.log('power=on, who:', who)
       state = true
       sendState()
+      getWho()
       timer = setInterval(sendState, 1000)
     }
   
@@ -78,21 +79,39 @@
     }
 
     function sendState() {
-      let req = new XMLHttpRequest()
+      let req = new XMLHttpRequest();
       req.onreadystatechange = () => {
         if (req.readyState == 4 || req.readyState == 200) {
-          txtStatus.innerHTML = state ? 'PoweredOn OK' : 'PoweredOff OK'
+          txtStatus.innerHTML = req.responseText; //state ? 'PoweredOn OK' : 'PoweredOff OK'
         } else {
-          txtStatus.innerHTML = ''
+          txtStatus.innerHTML = '???';
         }
       }
 
-      req.open('GET', 'who=' + who + '&state=' + (state ? 'on' : 'off'), true)
-      req.send()
+      req.open('GET', '/state/' + (state ? 'on' : 'off') + '/' + who, true);
+      req.send();
+    }
+
+    function getWho() {
+      let req = new XMLHttpRequest();
+      req.onreadystatechange = () => {
+        if (req.readyState == 4 || req.readyState == 200) {
+          txtWho.value = req.responseText;
+          // txtWho.textContent = txtWho.value;
+          if (txtWho.value.length == 0) {
+            txtWho.disabled = false;
+          }
+        }
+      }
+
+      req.open('GET', '/who', true);
+      req.send();
     }
 
     setEnabled()
-    txtWho.value = who; // on startup set name from server
+    getWho()
+    // setInterval(getWho, 10000);
+    //txtWho.value = who; // on startup set name from server
     txtWho.addEventListener("keyup", whoChange)
     btnOn.addEventListener("click", onClick)
     btnOff.addEventListener("click", offClick)
