@@ -13,8 +13,6 @@ const String noop = '_';
 const List<String> allowedOps = const ['om4aa' + noop + '1999', 'om3by' + noop + '1993'];
 bool powerState = false;
 String currentOp = noop;
-
-String ttyUSB = '';
 SerialPort arduino;
 
 
@@ -40,19 +38,23 @@ state(String state, String who) {
 }
 
 sendPowerState() async {
-  await arduino.writeString(powerState ? 'H' : 'L');
+  if (arduino != null) {
+    await arduino.writeString(powerState ? 'H' : 'L');
+  }
 }
 
 listSerialPorts() async {
   final ports = await SerialPort.availablePortNames;
   print("Found ${ports.length} USB <-> serial ports");
   ports.forEach((port) => print(port));
-  ttyUSB = ports.firstWhere((port) => port.contains("ttyUSB"), orElse: () => '');
-  print("Using port: ${ttyUSB}");
+  var ttyUSB = ports.firstWhere((port) => port.contains("ttyUSB"), orElse: () => '');
   
-  arduino = new SerialPort(ttyUSB);
-  arduino.onRead.map(BYTES_TO_STRING).listen((data) => print("arduino: ${data}"));
-  await arduino.open();
+  if (ttyUSB.isNotEmpty) {
+    print("Using port: ${ttyUSB}");
+    arduino = new SerialPort(ttyUSB);
+    arduino.onRead.map(BYTES_TO_STRING).listen((data) => print("arduino: ${data}"));
+    await arduino.open();
+  }
 }
 
 void main() {
