@@ -9,9 +9,10 @@ import 'dart:io' show Platform;
 import 'package:redstone/redstone.dart' as app;
 import 'package:path/path.dart' as Path;
 import 'package:shelf_static/shelf_static.dart';
+// import 'package:shelf/shelf.dart' as shelf;
 
 const String noop = '_';
-const List<String> allowedOps = const ['om4aa' + noop + '1999'];
+const List<String> allowedOps = const ['om4aa' + noop + '1999', 'om3by' + noop + '1993'];
 bool powerState = false;
 String currentOp = noop;
 
@@ -26,20 +27,33 @@ state(String state, String who) {
   print("state=${state}, who=${who} ${app.request.session}");
   if (who == null || (currentOp != noop && currentOp != who.toLowerCase()) || 
       !allowedOps.contains(who.toLowerCase())) {
-    return "Not authorized";
+    // throw new app.ErrorResponse(401, {'error': 'Not authorized'});
+    return "Not authorized: ${who}";
   }
   if (state == null || !['on', 'off'].contains(state)) {
-    return "Invalid state";
+    // throw new app.ErrorResponse(406, {'error': 'Invalid state'});
+    return "Invalid state: ${state}";
   }
+
+  // bool startup = !powerState;
   powerState = state == 'on';
   currentOp = powerState ? who : noop;
-  return powerState ? 'Powered ON' : 'Powered OFF';
+
+  // if (powerState && startup) { // first powerOn hit
+  //   // throw new app.ErrorResponse(201, {"error": 'Powered ON'}); // not an error, but specific result code
+  //   return new shelf.Response.found('Powered ON');
+  // }
+  // if (!powerState) {
+  //   throw new app.ErrorResponse(205, {"error": 'Powered OFF'}); // not an error, but specific result code
+  // }
+  return powerState ? 'ON' : 'OFF'; // resp code 200
 }
 
 void main() {
   String scriptPath = Path.dirname(Path.fromUri(Platform.script));
   String pathToWeb = Path.normalize("$scriptPath/../web");
   print("web path: ${pathToWeb}");
+  print("allowed ops: ${allowedOps}");
 
   app.setShelfHandler(createStaticHandler(pathToWeb, 
                                           defaultDocument: "index.html", 
