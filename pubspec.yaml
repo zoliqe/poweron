@@ -11,6 +11,8 @@ dependencies:
   args: ^0.13.7
   shelf: ^0.6.0
   redstone: any
+  serial_port:
+    path: lib-ext/serial_port
 
 #dev_dependencies:
 #  test: ^0.12.0
