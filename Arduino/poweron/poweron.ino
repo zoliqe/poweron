@@ -2,21 +2,28 @@
 #include <SoftwareSerial.h>
 
 const int ledPin = 13;
+const int pwrPin = 12;
+const int icomPwrPin = 11;
 const int timeOutMins = 1; 
 
 SoftwareSerial catSerial(2, 3); // RX, TX
-bool state = false;
+bool state = LOW;
 unsigned long milisStop;
 
 void setup() {
-  while (!Serial) {
-    ;
-  }
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, state);
+  pinMode(pwrPin, OUTPUT);
+  digitalWrite(pwrPin, state);
+  pinMode(icomPwrPin, OUTPUT);
+  digitalWrite(icomPwrPin, LOW);
+
+  // while (!Serial) {
+  //   ;
+  // }
   Serial.begin(9600);
   Serial.println("READY");
   Serial.flush();
-  pinMode(ledPin, OUTPUT);
-  digitalWrite(ledPin, state);
 
   catSerial.begin(9600);
 }
@@ -45,9 +52,18 @@ void loop() {
 }
 
 void on() {
+  bool prevState = state;
   state = HIGH;
-  milisStop = millis() + (timeOutMins * 60000);
   swstate();
+  
+  if (!prevState) { // simulate power button push on icom
+    delay(1000); // for pwr source startup
+    digitalWrite(icomPwrPin, HIGH);
+    delay(3000);
+    digitalWrite(icomPwrPin, LOW);
+  }
+
+  milisStop = millis() + (timeOutMins * 60000);
 }
 
 void off() {
@@ -61,6 +77,7 @@ void off() {
 void swstate() {
   Serial.println(state ? "HIGH" : "LOW");
   digitalWrite(ledPin, state);
+  digitalWrite(pwrPin, state);
   Serial.flush();
 }
 
