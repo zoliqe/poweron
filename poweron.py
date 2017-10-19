@@ -8,7 +8,7 @@ from operator import attrgetter
 from flask import Flask
 
 # declare device to be used, leave None to autodetect first serial port
-USE_DEVICE = '/dev/ttyUSB0'
+USE_DEVICE = None#'/dev/ttyUSB0'
 
 app = Flask(__name__)
 noop = "_"
