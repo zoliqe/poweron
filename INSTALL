@@ -1,3 +1,16 @@
+cd /opt
+git clone https://github.com/zoliqe/poweron.git
+cd poweron
+sudo apt -y install python3-serial python3-flask
+# (may require  apt install python3-yaml)
+sudo cp poweron.service /etc/systemd/system/
+sudo systemctl enable poweron
+sudo systemctl start poweron
+
+# optionaly use pip:
 #pip3 install sanic
-pip3 install flask
-pip3 install serial / apt install python3-serial (requires  pip3 install pyyaml / apt install python3-yaml)
+#pip3 install flask
+#pip3 install serial
+# (may require  pip3 install pyyaml)
+
+

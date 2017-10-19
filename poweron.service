@@ -1,0 +1,15 @@
+[Unit]
+ Description=PowerON Service
+ ConditionPathExists=/opt/poweron/service.sh
+
+[Service]
+ Type=forking
+ ExecStart=/opt/poweron/service.sh
+ TimeoutSec=0
+ StandardOutput=tty
+ RemainAfterExit=yes
+ SysVStartPriority=99
+
+[Install]
+ WantedBy=multi-user.target
+ 
